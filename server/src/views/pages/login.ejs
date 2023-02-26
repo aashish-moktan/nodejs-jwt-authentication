@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title>JWT - Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        #form-box {
+           width: 350px;
+           height: auto; 
+           position: absolute;
+           top: 50%;
+           left: 50%;
+           transform: translate(-50%, -50%);
+           padding: 35px 30px;
+            background-color: #f1f1f1;
+            font-family: 'Roboto', sans-serif;
+            border-radius: 4px;
+        }
+        img {
+            position: absolute;
+            top: -40px;
+            left: 130px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        input[type="email"], input[type="password"] {
+            padding: 5px 10px;
+            width: 100%;
+            height: 40px;
+            border: 1px solid #ccc;
+            outline: none;
+            margin-bottom: 15px;
+            border-radius: 2px;
+        }
+
+        button {
+            padding: 9px 18px;
+            height: 40px;
+            margin-top: 10px;
+            border: none;
+            background-color: black;
+            color: white;
+            font-size: 1rem;
+            border-radius: 3px;
+        }
+
+        #error-div {
+            display: none;
+            width: 100%;
+            background-color: #AC280C;
+            color: white;
+            padding: 12px 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="form-box">
+        <img src="https://png.pngtree.com/png-vector/20220817/ourmid/pngtree-cartoon-man-avatar-vector-ilustration-png-image_6111064.png" alt="avatar" width="80" />
+        <h2 align="center">Login form</h2>
+        <form id="login-form">
+            <div>
+                <label for="">Email*</label>
+                <input type="email" value="admin@gmail.com" name="email" required="required" />
+            </div>
+            <div>
+                <label for="">Password*</label>
+                <input type="password" value="admin" name="password" required="required" />
+            </div>
+            <div>
+                <button type="submit">Login</button>
+            </div>
+            <div id="error-div">
+                Invalid email or password !!!
+            </div>
+        </form>
+    </div>
+    <script>
+        window.onload = () => {
+            document.getElementById('login-form').onsubmit = async (e) => {
+                e.preventDefault()
+                const email = document.getElementsByName("email")[0].value
+                const password = document.getElementsByName("password")[0].value
+    
+                try {
+                    const data = await fetch("http://localhost:8000/auth/login", {
+                        method: "POST", 
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ email, password }),
+                    })
+
+                    const response = await data.json()
+                    localStorage.setItem("accessToken", response.token.accessToken)
+                    localStorage.setItem("refreshToken", response.token.refreshToken)
+
+                    // console.log("response = ", response)
+
+                    // const authResult = await fetch("http://localhost:8000/auth/dashboard", {
+                    //     method: "GET",
+                    //     headers: {
+                    //         "Content-Type": "application/json",
+                    //         "authorization": "Bearer " + response.token.accessToken
+                    //     }
+                    // })
+                    
+                    // const temp = await authResult.json()
+
+                    // console.log("Auth result = ", temp)
+
+                    location.href = "/auth/dashboard"
+                } catch(e) {
+                    console.log(e.message)
+                }
+                // .then((response) => response.json())
+                // .then((data) => {
+                //     console.log("Data = ", data)
+                //     if(data.success) {
+                //         localStorage.setItem("accessToken", data.token.accessToken)
+                //         localStorage.setItem("refreshToken", data.token.refreshToken)
+
+                //         fetch("http://localhost:8000/auth/dashboard", {
+                //             method: "GET",
+                //             headers: {
+                //                 "Content-Type": "application/json",
+                //                 "authorization": "Bearer " + data.token.accessToken
+                //             }
+                //         })
+                //         .then((data) => {
+                //             console.log("DAta = ", data)
+                //         })
+                //     }
+                // })
+                // .catch((error) => {
+                //     console.error("Error:", error);
+                // });
+            }
+        }
+    </script>
+</body>
+</html>
